@@ -47,4 +47,25 @@ class CalculadoraNotasTest {
         assertEquals(4.1, resultado, 0.001);
     }
     // ↓ Las pruebas de los pasos 7, 8 y 9 se pegan AQUÍ, antes de la última llave }
+
+    @ParameterizedTest(name = "{0} → {1}")
+    @CsvSource({
+        "5.0, Superior", "4.6, Superior",
+        "4.5, Alto",     "4.0, Alto",
+        "3.9, Básico",   "3.0, Básico",
+        "2.9, Bajo",     "0.0, Bajo"
+    })
+    @DisplayName("Clasifica el desempeño según la escala")
+    void desempeno_segunNota_retornaCategoria(double nota, String esperado) {
+        assertEquals(esperado, calculadora.desempeno(nota));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {-0.1, 5.1, 10.0})
+    @DisplayName("Rechaza notas fuera del rango 0.0 – 5.0")
+    void calcularNotaFinal_notaFueraDeRango_lanzaExcepcion(double notaInvalida) {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> calculadora.calcularNotaFinal(notaInvalida, 3.0, 3.0));
+        assertTrue(ex.getMessage().contains("entre 0.0 y 5.0"));
+    }
 }
